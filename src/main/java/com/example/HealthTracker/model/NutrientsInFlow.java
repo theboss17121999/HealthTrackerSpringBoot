@@ -15,7 +15,7 @@ public class NutrientsInFlow {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    private Long Fat;
+    private Long fat;
     private Long protein;
     private Long carbohydrate;
     private Long fiber;
