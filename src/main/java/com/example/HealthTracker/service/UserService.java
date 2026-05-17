@@ -1,12 +1,17 @@
 package com.example.HealthTracker.service;
 
 import com.example.HealthTracker.model.DailyTracker;
+import com.example.HealthTracker.model.NutrientsInFlow;
 import com.example.HealthTracker.model.Users;
+import com.example.HealthTracker.repo.DailyTrackerRepo;
+import com.example.HealthTracker.repo.NutrientsInFlowRepo;
 import com.example.HealthTracker.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +19,12 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private DailyTrackerRepo dailyTrackerRepo;
+
+    @Autowired
+    private NutrientsInFlowRepo nutrientsInFlowRepo;
 
     public List<Users> getUsers() {
         return userRepo.findAll();
@@ -29,6 +40,9 @@ public class UserService {
 
         boolean emailAvailable =
                 !userRepo.existsByEmail(user.getEmail());
+        if(user.getDailyTrackers() == null){
+            user.setDailyTrackers(new ArrayList<>());
+        }
 
         if(usernameAvailable && emailAvailable) {
             for (DailyTracker tracker : user.getDailyTrackers()) {
@@ -40,9 +54,7 @@ public class UserService {
         else  {
             return HttpStatus.CONFLICT;
         }
-
     }
-
     public HttpStatus addDailyTracker(String id, DailyTracker dailyTracker) {
         boolean usernameAvailable =
                 !userRepo.findById(id).isEmpty();
@@ -64,5 +76,29 @@ public class UserService {
 
 
         return HttpStatus.CONFLICT;
+    }
+
+    public HttpStatus editDailyTracker(String id, Date date, DailyTracker reqDailyTracker) {
+        date = new Date(date.getTime() + (5 * 60 * 60 * 1000) + (30 * 60 * 1000));
+
+        Optional<Users> userAvailable = userRepo.findById(id);
+
+        Optional<DailyTracker> userDailyTracker = dailyTrackerRepo.findByUnameAndDate(id,date);
+        if(userAvailable.isPresent() && userDailyTracker.isPresent()) {
+            //after finding and storing nutrients for DailyTracker for perticular date
+            NutrientsInFlow nutrients = userDailyTracker.get().getNutrients();
+//            System.out.println(" - - - - -  -Nutritions (find) :"+nutrients);
+
+            //changing Id for reqDailytracker and saving it, so that new record is not created in the table
+            reqDailyTracker.getNutrients().setId(nutrients.getId());
+//            System.out.println(" - - - - -  -Nutritions (to be set) :"+reqDailyTracker.getNutrients());
+
+            nutrientsInFlowRepo.save(reqDailyTracker.getNutrients());
+
+            return HttpStatus.ACCEPTED;
+        }
+
+        return HttpStatus.NOT_FOUND;
+
     }
 }

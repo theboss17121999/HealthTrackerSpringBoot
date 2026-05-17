@@ -5,10 +5,12 @@ import com.example.HealthTracker.model.DailyTracker;
 import com.example.HealthTracker.model.Users;
 import com.example.HealthTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +63,18 @@ public class UserController {
             e.printStackTrace();
             return e.getMessage();
         }
+    }
+
+    @PutMapping("editDailyProgress/{id}/{date}")
+    public HttpStatus editDailyTracker(@PathVariable
+                                        String id,
+                                        @PathVariable
+                                        @DateTimeFormat(pattern = "yyyy-MM-dd")
+                                        Date date,
+                                        @RequestBody DailyTracker dailyTracker) {
+
+        return service.editDailyTracker(id,date,dailyTracker);
+//        return service.getUsers().toString();
     }
 
 }

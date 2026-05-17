@@ -21,7 +21,6 @@ public class Users {
     private String lastName;
     private Date dateOfBirth;
     private String gender;
-    private Integer age;
     private Integer height;
     private Integer weight;
 
