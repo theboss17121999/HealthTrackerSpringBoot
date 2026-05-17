@@ -14,7 +14,4 @@ public interface DailyTrackerRepo extends JpaRepository<DailyTracker, UUID> {
 
     @Query("SELECT d FROM DailyTracker d WHERE d.user.uname = :uname AND d.date = :date")
     Optional<DailyTracker> findByUnameAndDate(String uname, Date date);
-
-    @Query("SELECT d FROM DailyTracker d WHERE d.user.uname = :uname AND d.date = :date")
-    void saveById(DailyTracker dailyTracker);
 }
