@@ -1,6 +1,7 @@
 package com.example.HealthTracker.controller;
 
 
+import com.example.HealthTracker.model.DTO.UserTrackerRecords;
 import com.example.HealthTracker.model.DailyTracker;
 import com.example.HealthTracker.model.Users;
 import com.example.HealthTracker.service.UserService;
@@ -27,19 +28,24 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public Optional<Users> getUsersById(@PathVariable String id) {
-        Optional<Users> users = service.getUsers(id);
-        return users;
+    public UserTrackerRecords getUsersById(@PathVariable String id) {
+        Optional<UserTrackerRecords> users = service.getUsers(id);
+        if (users.isPresent()) {
+            return users.get();
+        }
+        System.out.println("User not found");
+        return null;
+
     }
 
     @PostMapping("/addUser")
     public String addUser(@RequestBody Users user) {
         try {
-            switch (service.saveUser(user)){
-                case CREATED: return "User saved successfully";
-                case CONFLICT: return "Username or email already exists";
-                default: return "User";
-            }
+            return switch (service.saveUser(user)) {
+                case CREATED -> "User saved successfully";
+                case CONFLICT -> "Username or email already exists";
+                default -> "User";
+            };
         }
         catch (Exception e){
             e.printStackTrace();

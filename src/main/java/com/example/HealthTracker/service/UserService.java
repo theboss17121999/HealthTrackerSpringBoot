@@ -1,5 +1,6 @@
 package com.example.HealthTracker.service;
 
+import com.example.HealthTracker.model.DTO.UserTrackerRecords;
 import com.example.HealthTracker.model.DailyTracker;
 import com.example.HealthTracker.model.NutrientsInFlow;
 import com.example.HealthTracker.model.Users;
@@ -26,12 +27,20 @@ public class UserService {
     @Autowired
     private NutrientsInFlowRepo nutrientsInFlowRepo;
 
+
     public List<Users> getUsers() {
         return userRepo.findAll();
     }
 
-    public Optional<Users> getUsers(String id) {
-        return userRepo.findById(id);
+    public Optional<UserTrackerRecords> getUsers(String id) {
+
+        Optional<Users> user = userRepo.findById(id);
+
+        if (user.isPresent()) {
+            return Optional.of(getUserTrackerRecords(user.get()));
+        }
+
+        return Optional.empty();
     }
 
     public HttpStatus saveUser(Users user) throws Exception{
@@ -97,8 +106,20 @@ public class UserService {
 
             return HttpStatus.ACCEPTED;
         }
-
         return HttpStatus.NOT_FOUND;
+    }
 
+    public UserTrackerRecords getUserTrackerRecords(Users user) {
+        return new UserTrackerRecords(
+                user.getUname(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getDateOfBirth(),
+                user.getGender(),
+                user.getHeight(),
+                user.getWeight(),
+                user.getDailyTrackers()
+        );
     }
 }
