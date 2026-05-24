@@ -9,6 +9,7 @@ import com.example.HealthTracker.repo.NutrientsInFlowRepo;
 import com.example.HealthTracker.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ public class UserService {
 
     @Autowired
     private NutrientsInFlowRepo nutrientsInFlowRepo;
+
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
 
     public List<Users> getUsers() {
@@ -57,6 +60,7 @@ public class UserService {
             for (DailyTracker tracker : user.getDailyTrackers()) {
                 tracker.setUser(user);
             }
+            user.setPassword(encoder.encode(user.getPassword()));
             userRepo.save(user);
             return HttpStatus.CREATED;
         }

@@ -38,7 +38,7 @@ public class UserController {
 
     }
 
-    @PostMapping("/addUser")
+    @PostMapping("/register")
     public String addUser(@RequestBody Users user) {
         try {
             return switch (service.saveUser(user)) {

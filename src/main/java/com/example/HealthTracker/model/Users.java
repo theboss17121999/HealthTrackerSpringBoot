@@ -12,7 +12,6 @@ public class Users {
     @Id
     private String uname;
 
-    private String username;
     private String password;
     @Column(unique = true)
     private String email;
