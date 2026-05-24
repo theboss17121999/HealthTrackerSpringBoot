@@ -14,8 +14,6 @@ public record UserTrackerRecords(
         Date dateOfBirth,
         String gender,
         Integer height,
-        Integer weight,
-        List<DailyTracker> dailyTrackers
-
+        Integer weight
 ) {
 }

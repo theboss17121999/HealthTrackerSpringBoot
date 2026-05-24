@@ -1,17 +1,21 @@
 package com.example.HealthTracker.controller;
 
 
+import com.example.HealthTracker.model.DTO.LoginRequest;
 import com.example.HealthTracker.model.DTO.UserTrackerRecords;
 import com.example.HealthTracker.model.DailyTracker;
 import com.example.HealthTracker.model.Users;
+import com.example.HealthTracker.service.JwtService;
 import com.example.HealthTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +26,15 @@ public class UserController {
     @Autowired
     private UserService service;
 
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtService jwtService;
+
     @GetMapping("/users")
-    public List<Users> getUsers() {
-        List<Users> users = service.getUsers();
+    public List<UserTrackerRecords> getUsers() {
+        List<UserTrackerRecords> users = service.getUsers();
         return users;
     }
 
@@ -75,6 +85,7 @@ public class UserController {
     }
 
     @PutMapping("editDailyProgress/{id}/{date}")
+    @PreAuthorize("#id == authentication.name")
     public HttpStatus editDailyTracker(@PathVariable
                                         String id,
                                         @PathVariable
@@ -84,6 +95,30 @@ public class UserController {
 
         return service.editDailyTracker(id,date,dailyTracker);
 //        return service.getUsers().toString();
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest login) {
+
+        try {
+
+            Authentication authentication =
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    login.uname(),
+                                    login.password()
+                            )
+                    );
+
+            if(authentication.isAuthenticated()) {
+                return jwtService.generateToken(login.uname());
+            }
+
+        } catch (Exception e) {
+            return "Login Failed Please try again";
+        }
+
+        return "Login Failed";
     }
 
 }

@@ -31,8 +31,13 @@ public class UserService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
 
-    public List<Users> getUsers() {
-        return userRepo.findAll();
+    public List<UserTrackerRecords> getUsers() {
+
+        List<Users> users = userRepo.findAll();
+
+        return users.stream()
+                .map(this::getUserTrackerRecords)
+                .toList();
     }
 
     public Optional<UserTrackerRecords> getUsers(String id) {
@@ -52,6 +57,10 @@ public class UserService {
 
         boolean emailAvailable =
                 !userRepo.existsByEmail(user.getEmail());
+
+        if(user.getRole()==null){
+            user.setRole("USER");
+        }
         if(user.getDailyTrackers() == null){
             user.setDailyTrackers(new ArrayList<>());
         }
@@ -122,8 +131,7 @@ public class UserService {
                 user.getDateOfBirth(),
                 user.getGender(),
                 user.getHeight(),
-                user.getWeight(),
-                user.getDailyTrackers()
+                user.getWeight()
         );
     }
 }
