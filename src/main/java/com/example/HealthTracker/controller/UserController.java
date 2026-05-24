@@ -8,6 +8,7 @@ import com.example.HealthTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class UserController {
         return users;
     }
 
+    @PreAuthorize("#id == authentication.name")
     @GetMapping("/users/{id}")
     public UserTrackerRecords getUsersById(@PathVariable String id) {
         Optional<UserTrackerRecords> users = service.getUsers(id);
@@ -55,6 +57,7 @@ public class UserController {
     }
 
     @PostMapping("/addDailyProgress/{id}")
+    @PreAuthorize("#id == authentication.name")
     public String addDailyTracker(@PathVariable String id,
                                   @RequestBody DailyTracker dailyTracker) {
 

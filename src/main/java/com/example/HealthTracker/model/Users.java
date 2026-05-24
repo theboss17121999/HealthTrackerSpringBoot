@@ -21,6 +21,7 @@ public class Users {
     private String gender;
     private Integer height;
     private Integer weight;
+    private String role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<DailyTracker>  dailyTrackers;
