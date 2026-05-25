@@ -100,7 +100,7 @@ public class UserController {
     }
 
     @DeleteMapping("/deleteUser/{id}")
-//    @PreAuthorize("#id == authentication.name")
+    @PreAuthorize("#id == authentication.name")
     public ResponseEntity<String> deleteUser(@PathVariable String id) {
 
         try {
