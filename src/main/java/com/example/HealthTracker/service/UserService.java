@@ -1,5 +1,7 @@
 package com.example.HealthTracker.service;
 
+import com.example.HealthTracker.model.DTO.DailyTrackerData;
+import com.example.HealthTracker.model.DTO.Nutrients;
 import com.example.HealthTracker.model.DTO.UserTrackerRecords;
 import com.example.HealthTracker.model.DailyTracker;
 import com.example.HealthTracker.model.NutrientsInFlow;
@@ -7,6 +9,7 @@ import com.example.HealthTracker.model.Users;
 import com.example.HealthTracker.repo.DailyTrackerRepo;
 import com.example.HealthTracker.repo.NutrientsInFlowRepo;
 import com.example.HealthTracker.repo.UserRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -133,5 +136,38 @@ public class UserService {
                 user.getHeight(),
                 user.getWeight()
         );
+    }
+
+    //this method will delete user and all the date corresponding to it
+    @Transactional
+    public void deleteUser(String id) {
+
+        Users user = userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<DailyTracker> trackers = dailyTrackerRepo.findByUname(id);
+
+        dailyTrackerRepo.deleteAll(trackers);
+
+        userRepo.delete(user);
+    }
+
+    public List<DailyTrackerData> trackerRecords(String id) {
+        Optional<Users> user = userRepo.findById(id);
+        if (user.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        List<DailyTracker> dailyTrackers = dailyTrackerRepo.findByUname(id);
+        return dailyTrackers.stream()
+                .map(tracker -> new DailyTrackerData(
+                        tracker.getDate(),
+                        new Nutrients(
+                                tracker.getNutrients().getFat(),
+                                tracker.getNutrients().getProtein(),
+                                tracker.getNutrients().getCarbohydrate(),
+                                tracker.getNutrients().getFiber()
+                        )
+                ))
+                .toList();
     }
 }

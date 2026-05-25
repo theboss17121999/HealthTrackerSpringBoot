@@ -26,7 +26,7 @@ public class DailyTracker {
     @JsonIgnore
     private Users user;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private NutrientsInFlow nutrients;
 
     @Override

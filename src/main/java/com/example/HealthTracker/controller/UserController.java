@@ -1,6 +1,7 @@
 package com.example.HealthTracker.controller;
 
 
+import com.example.HealthTracker.model.DTO.DailyTrackerData;
 import com.example.HealthTracker.model.DTO.LoginRequest;
 import com.example.HealthTracker.model.DTO.UserTrackerRecords;
 import com.example.HealthTracker.model.DailyTracker;
@@ -10,6 +11,7 @@ import com.example.HealthTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -95,6 +97,28 @@ public class UserController {
 
         return service.editDailyTracker(id,date,dailyTracker);
 //        return service.getUsers().toString();
+    }
+
+    @DeleteMapping("/deleteUser/{id}")
+    @PreAuthorize("#id == authentication.name")
+    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+
+        service.deleteUser(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("DailyTracker/{id}")
+    @PreAuthorize("#id == authentication.name")
+    public ResponseEntity<?> getDailyTrackerById(@PathVariable String id) {
+        try {
+            List<DailyTrackerData> data = service.trackerRecords(id);
+            return ResponseEntity.ok(data);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
     }
 
     @PostMapping("/login")

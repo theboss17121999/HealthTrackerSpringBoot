@@ -23,6 +23,8 @@ public class Users {
     private Integer weight;
     private String role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<DailyTracker>  dailyTrackers;
 }

@@ -50,7 +50,10 @@ public class SecurityConfig {
         http
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/login","/register","/users").permitAll()
+                        .requestMatchers(
+                                "/login",
+                                "/register")
+                        .permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults()) //for user and password login
                 .sessionManagement(session ->
