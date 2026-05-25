@@ -100,12 +100,17 @@ public class UserController {
     }
 
     @DeleteMapping("/deleteUser/{id}")
-    @PreAuthorize("#id == authentication.name")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+//    @PreAuthorize("#id == authentication.name")
+    public ResponseEntity<String> deleteUser(@PathVariable String id) {
 
-        service.deleteUser(id);
+        try {
+            service.deleteUser(id);
+            return ResponseEntity.ok("User deleted successfully");
 
-        return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
     }
 
     @GetMapping("DailyTracker/{id}")
