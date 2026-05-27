@@ -27,13 +27,15 @@ public class JwtService {
     public String generateToken(String uname) {
 
         Map<String, Object> claims = new HashMap<>();
+        //testing to see what can be added
+//        claims.put("phone", new String("7999877596"));
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(uname)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(
-                        new Date(System.currentTimeMillis() + 1000 * 60 * 3)
+                        new Date(System.currentTimeMillis() + 1000 * 60 * 15)
                 )
                 .signWith(getKey(),SignatureAlgorithm.HS256)
                 .compact();

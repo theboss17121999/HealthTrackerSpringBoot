@@ -2,6 +2,7 @@ package com.example.HealthTracker.service;
 
 import com.example.HealthTracker.model.DTO.DailyTrackerData;
 import com.example.HealthTracker.model.DTO.Nutrients;
+import com.example.HealthTracker.model.DTO.UserNameRequest;
 import com.example.HealthTracker.model.DTO.UserTrackerRecords;
 import com.example.HealthTracker.model.DailyTracker;
 import com.example.HealthTracker.model.NutrientsInFlow;
@@ -12,6 +13,7 @@ import com.example.HealthTracker.repo.UserRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -103,8 +105,8 @@ public class UserService {
         return HttpStatus.CONFLICT;
     }
 
-    public HttpStatus editDailyTracker(String id, Date date, DailyTracker reqDailyTracker) {
-        date = new Date(date.getTime() + (5 * 60 * 60 * 1000) + (30 * 60 * 1000));
+    public HttpStatus editDailyTracker(String id, DailyTracker reqDailyTracker) {
+        Date date = new Date(reqDailyTracker.getDate().getTime());
 
         Optional<Users> userAvailable = userRepo.findById(id);
 
@@ -169,5 +171,18 @@ public class UserService {
                         )
                 ))
                 .toList();
+    }
+
+    public boolean FindUser(UserNameRequest request) {
+        if(request == null || request.username().isEmpty() || request.username().length() < 4 || Character.isDigit(request.username().charAt(0))){
+            return false;
+        }
+        Optional<Users> user = userRepo.findById(request.username());
+        if (user.isEmpty()) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 }

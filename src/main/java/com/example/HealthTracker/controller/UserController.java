@@ -3,13 +3,13 @@ package com.example.HealthTracker.controller;
 
 import com.example.HealthTracker.model.DTO.DailyTrackerData;
 import com.example.HealthTracker.model.DTO.LoginRequest;
+import com.example.HealthTracker.model.DTO.UserNameRequest;
 import com.example.HealthTracker.model.DTO.UserTrackerRecords;
 import com.example.HealthTracker.model.DailyTracker;
 import com.example.HealthTracker.model.Users;
 import com.example.HealthTracker.service.JwtService;
 import com.example.HealthTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +18,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +32,16 @@ public class UserController {
 
     @Autowired
     private JwtService jwtService;
+
+    @GetMapping("/search")
+    public ResponseEntity<Boolean> searchUser(@RequestBody UserNameRequest request) {
+        boolean b = service.FindUser(request);
+        if (b) {
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @GetMapping("/users")
     public List<UserTrackerRecords> getUsers() {
@@ -86,16 +95,13 @@ public class UserController {
         }
     }
 
-    @PutMapping("editDailyProgress/{id}/{date}")
+    @PutMapping("editDailyProgress/{id}")
     @PreAuthorize("#id == authentication.name")
     public HttpStatus editDailyTracker(@PathVariable
                                         String id,
-                                        @PathVariable
-                                        @DateTimeFormat(pattern = "yyyy-MM-dd")
-                                        Date date,
                                         @RequestBody DailyTracker dailyTracker) {
 
-        return service.editDailyTracker(id,date,dailyTracker);
+        return service.editDailyTracker(id,dailyTracker);
 //        return service.getUsers().toString();
     }
 

@@ -1,5 +1,6 @@
 package com.example.HealthTracker.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class DailyTracker {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date date;
 
 

@@ -52,7 +52,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
                                 "/login",
-                                "/register")
+                                "/register",
+                                "/search")
                         .permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults()) //for user and password login

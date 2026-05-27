@@ -30,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         // 1. Extract the Authorization header from the incoming HTTP request
-        System.out.println("request: "+request);
+//        System.out.println("request: "+request); // to print request
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String userName = null;
