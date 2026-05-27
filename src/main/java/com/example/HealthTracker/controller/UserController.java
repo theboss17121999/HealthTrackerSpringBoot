@@ -131,7 +131,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest login) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest login) {
 
         try {
 
@@ -144,14 +144,16 @@ public class UserController {
                     );
 
             if(authentication.isAuthenticated()) {
-                return jwtService.generateToken(login.uname());
+                return ResponseEntity.ok(jwtService.generateToken(login.uname()));
             }
 
         } catch (Exception e) {
-            return "Login Failed Please try again";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid username or password");
         }
 
-        return "Login Failed";
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid username or password");
     }
 
 }

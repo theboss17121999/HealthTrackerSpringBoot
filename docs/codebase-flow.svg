@@ -1,333 +1,305 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="980" viewBox="0 0 1440 980" role="img" aria-labelledby="title desc">
-  <title id="title">HealthTracker Project Graph</title>
-  <desc id="desc">Architecture graph for the HealthTracker Spring Boot project showing request flow, JWT security, environment-based secret configuration, service layer, repositories, entities, and PostgreSQL persistence.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1520" viewBox="0 0 1600 1520" role="img" aria-labelledby="title desc">
+  <title id="title">HealthTracker Codebase Flow</title>
+  <desc id="desc">Architecture diagram for the HealthTracker Spring Boot application showing public endpoints, protected endpoints, JWT authentication, BCrypt password validation, service logic, repositories, JPA entities, DTOs, configuration, and PostgreSQL persistence.</desc>
 
   <defs>
-    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
-      <path d="M1,1 L11,6 L1,11 Z" fill="#24313d"/>
+    <marker id="arrowDark" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M1,1 L11,6 L1,11 Z" fill="#1f2937"/>
     </marker>
-    <marker id="softArrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
-      <path d="M1,1 L11,6 L1,11 Z" fill="#65758b"/>
+    <marker id="arrowSoft" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M1,1 L11,6 L1,11 Z" fill="#64748b"/>
     </marker>
-    <marker id="warnArrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+    <marker id="arrowAuth" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M1,1 L11,6 L1,11 Z" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrowWarn" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
       <path d="M1,1 L11,6 L1,11 Z" fill="#b42318"/>
     </marker>
+
     <style>
-      :root {
-        color-scheme: light;
-      }
-
-      .page {
-        fill: #f5f7fa;
-      }
-
-      .title {
-        font: 700 34px Arial, Helvetica, sans-serif;
-        fill: #13202d;
-      }
-
-      .subtitle {
-        font: 400 16px Arial, Helvetica, sans-serif;
-        fill: #546173;
-      }
-
-      .band {
-        fill: #ffffff;
-        stroke: #c9d3df;
-        stroke-width: 1.4;
-        rx: 8;
-      }
-
-      .bandTitle {
-        font: 700 18px Arial, Helvetica, sans-serif;
-        fill: #24313d;
-      }
-
-      .node {
-        stroke-width: 2;
-        rx: 8;
-      }
-
-      .client {
-        fill: #e6f7f4;
-        stroke: #0f766e;
-      }
-
-      .app {
-        fill: #edf4ff;
-        stroke: #2563eb;
-      }
-
-      .security {
-        fill: #f2edff;
-        stroke: #7c3aed;
-      }
-
-      .guard {
-        fill: #eefcf6;
-        stroke: #047857;
-      }
-
-      .warn {
-        fill: #fff1f0;
-        stroke: #b42318;
-      }
-
-      .controller {
-        fill: #eaf2ff;
-        stroke: #1d4ed8;
-      }
-
-      .service {
-        fill: #ecfdf3;
-        stroke: #15803d;
-      }
-
-      .repo {
-        fill: #fff7ed;
-        stroke: #c2410c;
-      }
-
-      .model {
-        fill: #fffbeb;
-        stroke: #b45309;
-      }
-
-      .dto {
-        fill: #f0f9ff;
-        stroke: #0284c7;
-      }
-
-      .db {
-        fill: #fdf2f8;
-        stroke: #be185d;
-      }
-
-      .config {
-        fill: #f8fafc;
-        stroke: #475569;
-      }
-
-      .nodeTitle {
-        font: 700 17px Arial, Helvetica, sans-serif;
-        fill: #17212b;
-      }
-
-      .nodeText {
-        font: 400 13px Arial, Helvetica, sans-serif;
-        fill: #263442;
-      }
-
-      .small {
-        font: 400 12px Arial, Helvetica, sans-serif;
-        fill: #64748b;
-      }
-
-      .label {
-        font: 700 11px Arial, Helvetica, sans-serif;
-        fill: #475569;
-        text-transform: uppercase;
-      }
-
-      .flow {
-        stroke: #24313d;
-        stroke-width: 2.4;
-        fill: none;
-        marker-end: url(#arrow);
-      }
-
-      .softFlow {
-        stroke: #65758b;
-        stroke-width: 2;
-        stroke-dasharray: 8 7;
-        fill: none;
-        marker-end: url(#softArrow);
-      }
-
-      .relationship {
-        stroke: #8a5a16;
-        stroke-width: 2;
-        fill: none;
-        marker-end: url(#softArrow);
-      }
-
-      .warnFlow {
-        stroke: #b42318;
-        stroke-width: 2;
-        stroke-dasharray: 8 7;
-        fill: none;
-        marker-end: url(#warnArrow);
-      }
-
-      .divider {
-        stroke: #d8e0ea;
-        stroke-width: 1.2;
-      }
+      .page { fill: #f7f9fc; }
+      .title { font: 700 36px Arial, Helvetica, sans-serif; fill: #111827; }
+      .subtitle { font: 400 16px Arial, Helvetica, sans-serif; fill: #526174; }
+      .section { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 8; }
+      .sectionTitle { font: 700 19px Arial, Helvetica, sans-serif; fill: #1f2937; }
+      .sectionNote { font: 400 13px Arial, Helvetica, sans-serif; fill: #64748b; }
+      .node { stroke-width: 2; rx: 8; }
+      .client { fill: #e6f7f4; stroke: #0f766e; }
+      .boot { fill: #edf4ff; stroke: #2563eb; }
+      .security { fill: #f3efff; stroke: #7c3aed; }
+      .controller { fill: #eaf2ff; stroke: #1d4ed8; }
+      .service { fill: #ecfdf3; stroke: #15803d; }
+      .repo { fill: #fff7ed; stroke: #c2410c; }
+      .entity { fill: #fffbeb; stroke: #b45309; }
+      .dto { fill: #f0f9ff; stroke: #0284c7; }
+      .config { fill: #f8fafc; stroke: #475569; }
+      .db { fill: #fdf2f8; stroke: #be185d; }
+      .warning { fill: #fff1f0; stroke: #b42318; }
+      .nodeTitle { font: 700 16px Arial, Helvetica, sans-serif; fill: #17212b; }
+      .nodeText { font: 400 13px Arial, Helvetica, sans-serif; fill: #263442; }
+      .small { font: 400 12px Arial, Helvetica, sans-serif; fill: #64748b; }
+      .mono { font: 400 12px Consolas, "Courier New", monospace; fill: #263442; }
+      .label { font: 700 11px Arial, Helvetica, sans-serif; fill: #475569; text-transform: uppercase; }
+      .flow { stroke: #1f2937; stroke-width: 2.4; fill: none; marker-end: url(#arrowDark); }
+      .softFlow { stroke: #64748b; stroke-width: 2; stroke-dasharray: 7 6; fill: none; marker-end: url(#arrowSoft); }
+      .authFlow { stroke: #7c3aed; stroke-width: 2.3; fill: none; marker-end: url(#arrowAuth); }
+      .warnFlow { stroke: #b42318; stroke-width: 2; stroke-dasharray: 7 6; fill: none; marker-end: url(#arrowWarn); }
+      .relation { stroke: #8a5a16; stroke-width: 2; fill: none; marker-end: url(#arrowSoft); }
+      .divider { stroke: #d8e0ea; stroke-width: 1.2; }
     </style>
   </defs>
 
-  <rect class="page" width="1440" height="980"/>
+  <rect class="page" width="1600" height="1520"/>
 
-  <text class="title" x="52" y="58">HealthTracker Project Graph</text>
-  <text class="subtitle" x="52" y="86">Spring Boot request flow, JWT security wiring, environment configuration, service/repository layers, and JPA entity relationships.</text>
+  <text class="title" x="54" y="58">HealthTracker Codebase Flow</text>
+  <text class="subtitle" x="54" y="86">Spring Boot WebMVC app with stateless JWT auth, BCrypt password checks, JPA repositories, DTO responses, and PostgreSQL persistence.</text>
 
-  <rect class="band" x="40" y="118" width="1360" height="330"/>
-  <text class="bandTitle" x="64" y="151">Runtime Request Flow</text>
+  <rect class="section" x="42" y="118" width="1516" height="304"/>
+  <text class="sectionTitle" x="66" y="151">1. Runtime Request Pipeline</text>
+  <text class="sectionNote" x="66" y="174">Every request enters Spring Security first. Public routes skip credential requirements; protected routes need a valid Bearer token.</text>
 
-  <rect class="node client" x="70" y="210" width="165" height="92"/>
-  <text class="nodeTitle" x="120" y="244">Client</text>
-  <text class="nodeText" x="101" y="271">Browser / Postman</text>
-  <text class="small" x="105" y="292">HTTP request</text>
+  <rect class="node client" x="78" y="222" width="160" height="88"/>
+  <text class="nodeTitle" x="125" y="255">Client</text>
+  <text class="nodeText" x="112" y="280">Postman / UI</text>
+  <text class="small" x="105" y="300">HTTP + JSON body</text>
 
-  <rect class="node app" x="292" y="210" width="230" height="92"/>
-  <text class="nodeTitle" x="328" y="244">Spring Boot App</text>
-  <text class="nodeText" x="326" y="271">HealthTrackerApplication</text>
-  <text class="small" x="332" y="292">starts component scan</text>
+  <rect class="node boot" x="294" y="222" width="220" height="88"/>
+  <text class="nodeTitle" x="335" y="255">Spring Boot App</text>
+  <text class="nodeText" x="323" y="280">HealthTrackerApplication</text>
+  <text class="small" x="337" y="300">component scanning</text>
 
-  <rect class="node security" x="580" y="166" width="250" height="92"/>
-  <text class="nodeTitle" x="650" y="200">SecurityConfig</text>
-  <text class="nodeText" x="613" y="226">JWT filter + stateless sessions</text>
-  <text class="small" x="614" y="247">@EnableMethodSecurity active</text>
+  <rect class="node security" x="570" y="190" width="238" height="88"/>
+  <text class="nodeTitle" x="626" y="223">SecurityConfig</text>
+  <text class="nodeText" x="608" y="248">stateless sessions</text>
+  <text class="small" x="606" y="268">@EnableMethodSecurity</text>
 
-  <rect class="node guard" x="580" y="270" width="250" height="34"/>
-  <text class="nodeText" x="620" y="292">JwtFilter reads Bearer token</text>
+  <rect class="node security" x="570" y="304" width="238" height="72"/>
+  <text class="nodeTitle" x="657" y="334">JwtFilter</text>
+  <text class="nodeText" x="610" y="358">reads Authorization header</text>
 
-  <rect class="node controller" x="580" y="316" width="250" height="104"/>
-  <text class="nodeTitle" x="642" y="349">Controllers</text>
-  <text class="nodeText" x="615" y="376">/login and /register are public</text>
-  <text class="nodeText" x="615" y="397">owner endpoints use @PreAuthorize</text>
+  <rect class="node controller" x="872" y="222" width="248" height="88"/>
+  <text class="nodeTitle" x="941" y="255">Controllers</text>
+  <text class="nodeText" x="913" y="280">UserController</text>
+  <text class="small" x="918" y="300">HelloController</text>
 
-  <rect class="node warn" x="900" y="166" width="455" height="92"/>
-  <text class="nodeTitle" x="1041" y="199">Authorization note</text>
-  <text class="nodeText" x="930" y="225">GET /users is available to any authenticated user</text>
-  <text class="nodeText" x="930" y="246">Owner routes compare path id with authentication.name</text>
+  <rect class="node service" x="1180" y="222" width="165" height="88"/>
+  <text class="nodeTitle" x="1219" y="255">Services</text>
+  <text class="nodeText" x="1216" y="280">UserService</text>
+  <text class="small" x="1217" y="300">JwtService</text>
 
-  <rect class="node service" x="900" y="316" width="210" height="104"/>
-  <text class="nodeTitle" x="959" y="349">UserService</text>
-  <text class="nodeText" x="935" y="376">business logic</text>
-  <text class="small" x="930" y="397">register, fetch, tracker edit</text>
+  <rect class="node repo" x="1392" y="222" width="128" height="88"/>
+  <text class="nodeTitle" x="1421" y="255">Repos</text>
+  <text class="nodeText" x="1418" y="280">Spring Data</text>
+  <text class="small" x="1420" y="300">JPA queries</text>
 
-  <rect class="node repo" x="1170" y="316" width="185" height="104"/>
-  <text class="nodeTitle" x="1213" y="349">Repositories</text>
-  <text class="nodeText" x="1202" y="376">Spring Data JPA</text>
-  <text class="small" x="1205" y="397">query/save entities</text>
+  <path class="flow" d="M238 266 L294 266"/>
+  <path class="flow" d="M514 266 L570 236"/>
+  <path class="authFlow" d="M689 278 L689 304"/>
+  <path class="flow" d="M808 266 L872 266"/>
+  <path class="flow" d="M1120 266 L1180 266"/>
+  <path class="flow" d="M1345 266 L1392 266"/>
 
-  <path class="flow" d="M235 256 L292 256"/>
-  <path class="flow" d="M522 256 C548 256 548 212 580 212"/>
-  <path class="flow" d="M705 258 L705 270"/>
-  <path class="flow" d="M705 304 L705 316"/>
-  <path class="flow" d="M830 368 L900 368"/>
-  <path class="flow" d="M1110 368 L1170 368"/>
-  <path class="warnFlow" d="M1128 258 C1046 295 940 324 830 342"/>
+  <text class="label" x="252" y="255">request</text>
+  <text class="label" x="525" y="243">security chain</text>
+  <text class="label" x="706" y="294">bearer</text>
+  <text class="label" x="826" y="255">dispatch</text>
+  <text class="label" x="1134" y="255">calls</text>
+  <text class="label" x="1355" y="255">uses</text>
 
-  <text class="label" x="249" y="245">HTTP</text>
-  <text class="label" x="539" y="232">filters</text>
-  <text class="label" x="715" y="286">extracts</text>
-  <text class="label" x="849" y="356">calls</text>
-  <text class="label" x="1126" y="356">uses</text>
+  <rect class="node warning" x="872" y="328" width="648" height="70"/>
+  <text class="nodeTitle" x="898" y="356">Current security rule</text>
+  <text class="nodeText" x="898" y="376">/login, /register, and /search/** are permitAll.</text>
+  <text class="nodeText" x="898" y="392">User-specific routes compare path id with authentication.name.</text>
+  <path class="warnFlow" d="M1114 328 C1068 314 1014 306 997 310"/>
 
-  <rect class="band" x="40" y="480" width="655" height="365"/>
-  <text class="bandTitle" x="64" y="513">Authentication Path</text>
+  <rect class="section" x="42" y="454" width="700" height="352"/>
+  <text class="sectionTitle" x="66" y="487">2. Public Endpoint Map</text>
+  <text class="sectionNote" x="66" y="510">These routes can be called without a JWT according to the current SecurityConfig.</text>
 
-  <rect class="node security" x="72" y="555" width="210" height="86"/>
-  <text class="nodeTitle" x="123" y="588">POST /login</text>
-  <text class="nodeText" x="103" y="615">LoginRequest credentials</text>
+  <rect class="node controller" x="78" y="548" width="300" height="96"/>
+  <text class="nodeTitle" x="103" y="579">POST /register</text>
+  <text class="nodeText" x="103" y="604">Request body: Users entity JSON</text>
+  <text class="small" x="103" y="625">UserService.saveUser() hashes password</text>
 
-  <rect class="node security" x="352" y="555" width="250" height="86"/>
-  <text class="nodeTitle" x="389" y="588">DaoAuthenticationProvider</text>
-  <text class="nodeText" x="408" y="615">validates username/password</text>
+  <rect class="node security" x="410" y="548" width="300" height="96"/>
+  <text class="nodeTitle" x="435" y="579">POST /login</text>
+  <text class="nodeText" x="435" y="604">Request body: LoginRequest</text>
+  <text class="mono" x="435" y="625">{ "uname": "...", "password": "..." }</text>
 
-  <rect class="node service" x="72" y="704" width="230" height="86"/>
-  <text class="nodeTitle" x="105" y="737">MyUserDetailsService</text>
-  <text class="nodeText" x="109" y="764">loadUserByUsername()</text>
+  <rect class="node controller" x="78" y="678" width="300" height="82"/>
+  <text class="nodeTitle" x="103" y="709">GET /search/{username}</text>
+  <text class="nodeText" x="103" y="734">Uses username path variable</text>
+  <text class="small" x="103" y="752">Returns true only when valid username exists</text>
 
-  <rect class="node model" x="372" y="704" width="210" height="86"/>
-  <text class="nodeTitle" x="417" y="737">UserPrinciple</text>
-  <text class="nodeText" x="411" y="760">username = user.uname</text>
-  <text class="small" x="414" y="779">authority = USER</text>
+  <rect class="node controller" x="410" y="678" width="300" height="82"/>
+  <text class="nodeTitle" x="435" y="709">GET /users</text>
+  <text class="nodeText" x="435" y="734">Requires JWT authentication</text>
+  <text class="small" x="435" y="752">Returns all UserTrackerRecords</text>
 
-  <rect class="node service" x="252" y="798" width="190" height="32"/>
-  <text class="small" x="300" y="819">JwtService signs token</text>
+  <path class="flow" d="M228 644 L228 678"/>
+  <path class="flow" d="M560 644 L560 678"/>
 
-  <path class="flow" d="M282 598 L352 598"/>
-  <path class="flow" d="M477 641 C477 665 420 676 302 727"/>
-  <path class="flow" d="M302 747 L372 747"/>
-  <path class="softFlow" d="M477 641 L365 798"/>
-  <path class="softFlow" d="M442 814 C515 818 574 766 580 641"/>
+  <rect class="section" x="778" y="454" width="780" height="352"/>
+  <text class="sectionTitle" x="802" y="487">3. Login And JWT Generation</text>
+  <text class="sectionNote" x="802" y="510">Successful login returns a JWT token string. Later protected requests must send Authorization: Bearer &lt;token&gt;.</text>
 
-  <text class="label" x="304" y="586">authenticates</text>
-  <text class="label" x="379" y="676">loads user</text>
-  <text class="label" x="315" y="737">returns</text>
+  <rect class="node security" x="812" y="548" width="178" height="82"/>
+  <text class="nodeTitle" x="842" y="580">LoginRequest</text>
+  <text class="nodeText" x="843" y="605">uname + password</text>
 
-  <rect class="band" x="725" y="480" width="675" height="365"/>
-  <text class="bandTitle" x="749" y="513">Persistence And Domain Model</text>
+  <rect class="node security" x="1030" y="548" width="230" height="82"/>
+  <text class="nodeTitle" x="1066" y="580">AuthenticationManager</text>
+  <text class="nodeText" x="1074" y="605">UsernamePassword token</text>
 
-  <rect class="node repo" x="760" y="550" width="175" height="78"/>
-  <text class="nodeTitle" x="811" y="582">UserRepo</text>
-  <text class="small" x="785" y="607">JpaRepository&lt;Users, String&gt;</text>
+  <rect class="node security" x="1298" y="548" width="222" height="82"/>
+  <text class="nodeTitle" x="1333" y="580">DaoAuthProvider</text>
+  <text class="nodeText" x="1346" y="605">BCryptPasswordEncoder(12)</text>
 
-  <rect class="node repo" x="760" y="660" width="205" height="78"/>
-  <text class="nodeTitle" x="800" y="692">DailyTrackerRepo</text>
-  <text class="small" x="798" y="717">findByUnameAndDate()</text>
+  <rect class="node service" x="812" y="686" width="230" height="82"/>
+  <text class="nodeTitle" x="845" y="718">MyUserDetailsService</text>
+  <text class="nodeText" x="847" y="743">UserRepo.findByUname()</text>
 
-  <rect class="node repo" x="760" y="770" width="225" height="78"/>
-  <text class="nodeTitle" x="794" y="802">NutrientsInFlowRepo</text>
-  <text class="small" x="804" y="827">JpaRepository&lt;Nutrients, UUID&gt;</text>
+  <rect class="node entity" x="1082" y="686" width="190" height="82"/>
+  <text class="nodeTitle" x="1122" y="718">UserPrinciple</text>
+  <text class="nodeText" x="1120" y="743">username = uname</text>
 
-  <rect class="node model" x="1050" y="550" width="160" height="78"/>
-  <text class="nodeTitle" x="1102" y="582">Users</text>
-  <text class="small" x="1085" y="604">@Entity, uname PK</text>
-  <text class="small" x="1096" y="620">password, role</text>
+  <rect class="node service" x="1312" y="686" width="208" height="82"/>
+  <text class="nodeTitle" x="1367" y="718">JwtService</text>
+  <text class="nodeText" x="1350" y="743">signs token with JWT_SECRET</text>
 
-  <rect class="node model" x="1050" y="672" width="190" height="78"/>
-  <text class="nodeTitle" x="1093" y="704">DailyTracker</text>
-  <text class="small" x="1095" y="729">@Entity, UUID PK</text>
+  <path class="authFlow" d="M990 589 L1030 589"/>
+  <path class="authFlow" d="M1260 589 L1298 589"/>
+  <path class="authFlow" d="M1409 630 C1409 658 1055 656 927 686"/>
+  <path class="authFlow" d="M1042 727 L1082 727"/>
+  <path class="authFlow" d="M1272 727 L1312 727"/>
+  <path class="authFlow" d="M1416 686 C1430 654 1430 633 1410 630"/>
 
-  <rect class="node model" x="1050" y="790" width="210" height="78"/>
-  <text class="nodeTitle" x="1085" y="822">NutrientsInFlow</text>
-  <text class="small" x="1082" y="847">fat, protein, carbs, fiber</text>
+  <text class="label" x="1000" y="578">authenticate</text>
+  <text class="label" x="1270" y="578">delegates</text>
+  <text class="label" x="1080" y="673">loads user</text>
+  <text class="label" x="1281" y="715">success</text>
 
-  <rect class="node db" x="1300" y="650" width="72" height="92"/>
-  <text class="nodeTitle" x="1317" y="686">DB</text>
-  <text class="small" x="1309" y="712">PostgreSQL</text>
+  <rect class="section" x="42" y="838" width="700" height="236"/>
+  <text class="sectionTitle" x="66" y="871">4. Protected User And Tracker Routes</text>
+  <text class="sectionNote" x="66" y="894">These routes require a valid JWT. The id in the path must match the authenticated username.</text>
 
-  <path class="flow" d="M935 589 L1050 589"/>
-  <path class="flow" d="M965 699 L1050 711"/>
-  <path class="flow" d="M985 809 L1050 829"/>
-  <path class="flow" d="M1210 589 C1270 589 1270 680 1300 680"/>
-  <path class="flow" d="M1240 711 L1300 711"/>
-  <path class="flow" d="M1260 829 C1296 829 1292 742 1300 726"/>
+  <rect class="node controller" x="78" y="928" width="300" height="106"/>
+  <text class="nodeTitle" x="103" y="958">User-specific endpoints</text>
+  <text class="mono" x="103" y="982">GET /users/{id}</text>
+  <text class="mono" x="103" y="1003">DELETE /deleteUser/{id}</text>
+  <text class="small" x="103" y="1024">@PreAuthorize("#id == authentication.name")</text>
 
-  <path class="relationship" d="M1130 628 L1138 672"/>
-  <path class="relationship" d="M1148 750 L1153 790"/>
+  <rect class="node controller" x="410" y="928" width="300" height="106"/>
+  <text class="nodeTitle" x="435" y="958">Tracker endpoints</text>
+  <text class="mono" x="435" y="982">POST /addDailyProgress/{id}</text>
+  <text class="mono" x="435" y="1003">PUT /editDailyProgress/{id}</text>
+  <text class="mono" x="435" y="1024">GET /DailyTracker/{id}</text>
 
-  <text class="label" x="990" y="577">entity</text>
-  <text class="label" x="1268" y="668">JPA</text>
-  <text class="label" x="1160" y="654">one-to-many</text>
-  <text class="label" x="1162" y="775">one-to-one</text>
+  <rect class="section" x="778" y="838" width="780" height="236"/>
+  <text class="sectionTitle" x="802" y="871">5. Service Responsibilities</text>
+  <text class="sectionNote" x="802" y="894">UserController delegates application behavior to UserService; JwtFilter and login use JwtService for token handling.</text>
 
-  <rect class="node dto" x="516" y="862" width="235" height="58"/>
-  <text class="nodeTitle" x="559" y="895">UserTrackerRecords</text>
-  <text class="small" x="558" y="915">DTO returned for user details</text>
+  <rect class="node service" x="812" y="928" width="220" height="106"/>
+  <text class="nodeTitle" x="850" y="958">UserService</text>
+  <text class="nodeText" x="840" y="982">saveUser: BCrypt hash</text>
+  <text class="nodeText" x="840" y="1003">trackerRecords / edit / delete</text>
+  <text class="small" x="840" y="1024">maps Users to UserTrackerRecords</text>
 
-  <rect class="node config" x="78" y="862" width="190" height="58"/>
-  <text class="nodeTitle" x="112" y="895">application.properties</text>
-  <text class="small" x="102" y="915">imports .env, datasource, JPA</text>
+  <rect class="node service" x="1086" y="928" width="190" height="106"/>
+  <text class="nodeTitle" x="1135" y="958">JwtService</text>
+  <text class="nodeText" x="1115" y="982">generateToken()</text>
+  <text class="nodeText" x="1115" y="1003">extractUserName()</text>
+  <text class="small" x="1115" y="1024">validateToken()</text>
 
-  <rect class="node config" x="300" y="862" width="155" height="58"/>
-  <text class="nodeTitle" x="349" y="895">pom.xml</text>
-  <text class="small" x="314" y="915">WebMVC, JPA, Security, JJWT</text>
+  <rect class="node security" x="1330" y="928" width="190" height="106"/>
+  <text class="nodeTitle" x="1373" y="958">JwtFilter</text>
+  <text class="nodeText" x="1356" y="982">extracts Bearer token</text>
+  <text class="nodeText" x="1356" y="1003">sets SecurityContext</text>
+  <text class="small" x="1356" y="1024">before controller dispatch</text>
 
-  <rect class="node config" x="820" y="862" width="170" height="58"/>
-  <text class="nodeTitle" x="878" y="895">.env</text>
-  <text class="small" x="851" y="915">JWT_SECRET, gitignored</text>
+  <path class="flow" d="M710 981 L812 981"/>
+  <path class="authFlow" d="M1330 981 L1276 981"/>
+  <text class="label" x="732" y="969">delegates</text>
+  <text class="label" x="1288" y="969">token checks</text>
 
-  <path class="softFlow" d="M268 891 L760 589"/>
-  <path class="softFlow" d="M455 891 L580 212"/>
-  <path class="softFlow" d="M582 862 C678 808 822 746 900 420"/>
-  <path class="softFlow" d="M820 891 C650 850 492 824 442 814"/>
-  <path class="softFlow" d="M820 891 L268 891"/>
+  <rect class="section" x="42" y="1104" width="1516" height="260"/>
+  <text class="sectionTitle" x="66" y="1137">6. Repositories, Entities, DTOs, And Database</text>
+  <text class="sectionNote" x="66" y="1160">JPA repositories persist entity objects. DTO records keep API responses smaller than the full entity graph.</text>
 
-  <line class="divider" x1="40" y1="946" x2="1400" y2="946"/>
-  <text class="small" x="52" y="966">Legend: solid arrows show runtime/data flow, dashed arrows show configuration/DTO support, brown arrows show JPA relationships.</text>
+  <rect class="node repo" x="78" y="1190" width="190" height="94"/>
+  <text class="nodeTitle" x="126" y="1220">UserRepo</text>
+  <text class="small" x="102" y="1242">JpaRepository&lt;Users, String&gt;</text>
+  <text class="small" x="102" y="1262">findByUname(), existsByEmail()</text>
+
+  <rect class="node repo" x="314" y="1190" width="220" height="94"/>
+  <text class="nodeTitle" x="359" y="1220">DailyTrackerRepo</text>
+  <text class="small" x="338" y="1242">JpaRepository&lt;DailyTracker, UUID&gt;</text>
+  <text class="small" x="338" y="1262">findByUname(), findByUnameAndDate()</text>
+
+  <rect class="node repo" x="580" y="1190" width="230" height="94"/>
+  <text class="nodeTitle" x="620" y="1220">NutrientsInFlowRepo</text>
+  <text class="small" x="604" y="1242">JpaRepository&lt;NutrientsInFlow, UUID&gt;</text>
+  <text class="small" x="604" y="1262">standard CRUD operations</text>
+
+  <rect class="node entity" x="864" y="1190" width="160" height="94"/>
+  <text class="nodeTitle" x="918" y="1220">Users</text>
+  <text class="small" x="894" y="1242">uname primary key</text>
+  <text class="small" x="894" y="1262">password, email, profile</text>
+
+  <rect class="node entity" x="1070" y="1190" width="190" height="94"/>
+  <text class="nodeTitle" x="1116" y="1220">DailyTracker</text>
+  <text class="small" x="1097" y="1242">UUID id, date</text>
+  <text class="small" x="1097" y="1262">unique user + date</text>
+
+  <rect class="node entity" x="1306" y="1190" width="210" height="94"/>
+  <text class="nodeTitle" x="1344" y="1220">NutrientsInFlow</text>
+  <text class="small" x="1335" y="1242">fat, protein, carbohydrate</text>
+  <text class="small" x="1335" y="1262">fiber</text>
+
+  <rect class="node dto" x="312" y="1308" width="330" height="48"/>
+  <text class="nodeTitle" x="421" y="1330">DTO Records</text>
+  <text class="small" x="336" y="1345">LoginRequest, UserNameRequest, UserTrackerRecords</text>
+  <text class="small" x="336" y="1358">DailyTrackerData, Nutrients</text>
+
+  <rect class="node db" x="998" y="1308" width="250" height="40"/>
+  <text class="nodeTitle" x="1069" y="1333">PostgreSQL</text>
+  <text class="small" x="1030" y="1346">localhost:5432/HealthTracker</text>
+
+  <path class="flow" d="M268 1237 L864 1237"/>
+  <path class="flow" d="M534 1237 L1070 1237"/>
+  <path class="flow" d="M810 1237 L1306 1237"/>
+  <path class="relation" d="M1024 1237 L1070 1237"/>
+  <path class="relation" d="M1260 1237 L1306 1237"/>
+  <path class="flow" d="M944 1284 C960 1306 1010 1321 998 1328"/>
+  <path class="flow" d="M1165 1284 L1123 1308"/>
+  <path class="flow" d="M1411 1284 C1395 1320 1280 1328 1248 1328"/>
+  <path class="softFlow" d="M612 1328 C720 1320 790 1284 864 1237"/>
+
+  <text class="label" x="690" y="1225">maps to</text>
+  <text class="label" x="1032" y="1225">many-to-one</text>
+  <text class="label" x="1268" y="1225">one-to-one</text>
+  <text class="label" x="1262" y="1317">persists</text>
+
+  <rect class="section" x="42" y="1390" width="1516" height="78"/>
+  <text class="sectionTitle" x="66" y="1423">7. Configuration Support</text>
+
+  <rect class="node config" x="300" y="1410" width="310" height="42"/>
+  <text class="nodeTitle" x="354" y="1437">application.properties</text>
+  <text class="small" x="354" y="1450">imports .env, datasource, Hibernate update</text>
+
+  <rect class="node config" x="660" y="1410" width="170" height="42"/>
+  <text class="nodeTitle" x="720" y="1437">.env</text>
+  <text class="small" x="692" y="1450">JWT_SECRET value</text>
+
+  <rect class="node config" x="880" y="1410" width="220" height="42"/>
+  <text class="nodeTitle" x="950" y="1437">pom.xml</text>
+  <text class="small" x="914" y="1450">WebMVC, JPA, Security, JJWT</text>
+
+  <path class="softFlow" d="M610 1431 L660 1431"/>
+  <path class="softFlow" d="M880 1431 L830 1431"/>
+  <path class="softFlow" d="M455 1410 C516 1278 610 944 812 768"/>
+  <path class="softFlow" d="M715 1410 C710 1018 983 820 1312 768"/>
+
+  <line class="divider" x1="42" y1="1490" x2="1558" y2="1490"/>
+  <text class="small" x="54" y="1510">Legend: solid arrows show request/data flow, purple arrows show authentication/JWT flow, dashed arrows show configuration support, red dashed arrows highlight current access-rule notes.</text>
 </svg>
