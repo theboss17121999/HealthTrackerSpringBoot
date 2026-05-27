@@ -173,11 +173,11 @@ public class UserService {
                 .toList();
     }
 
-    public boolean FindUser(UserNameRequest request) {
-        if(request == null || request.username().isEmpty() || request.username().length() < 4 || Character.isDigit(request.username().charAt(0))){
+    public boolean findUser(String username) {
+        if(username == null || username.isEmpty() || username.length() < 4 || Character.isDigit(username.charAt(0))){
             return false;
         }
-        Optional<Users> user = userRepo.findById(request.username());
+        Optional<Users> user = userRepo.findById(username);
         if (user.isEmpty()) {
             return false;
         }

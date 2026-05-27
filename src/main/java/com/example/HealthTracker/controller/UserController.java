@@ -33,14 +33,12 @@ public class UserController {
     @Autowired
     private JwtService jwtService;
 
-    @GetMapping("/search")
-    public ResponseEntity<Boolean> searchUser(@RequestBody UserNameRequest request) {
-        boolean b = service.FindUser(request);
-        if (b) {
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping("/search/{username}")
+    public ResponseEntity<Boolean> searchUser(@PathVariable String username) {
+
+        boolean exists = service.findUser(username);
+
+        return ResponseEntity.ok(exists);
     }
 
     @GetMapping("/users")
