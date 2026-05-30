@@ -22,6 +22,13 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(
+        origins = {
+                "*"
+//                "http://localhost:5173",
+//                "http://192.168.31.44:5173"
+        }
+)
 public class UserController {
 
     @Autowired
@@ -60,46 +67,90 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String addUser(@RequestBody Users user) {
+    public ResponseEntity<?> addUser(@RequestBody Users user) {
         try {
             return switch (service.saveUser(user)) {
-                case CREATED -> "User saved successfully";
-                case CONFLICT -> "Username or email already exists";
-                default -> "User";
+                case CREATED -> ResponseEntity.ok("User created successfully");
+                case CONFLICT -> ResponseEntity.badRequest().body("User already exists");
+                default -> ResponseEntity.badRequest().body("User not found")  ;
             };
         }
         catch (Exception e){
             e.printStackTrace();
-            return e.getMessage();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
 //        return new String();y
     }
 
     @PostMapping("/addDailyProgress/{id}")
     @PreAuthorize("#id == authentication.name")
-    public String addDailyTracker(@PathVariable String id,
-                                  @RequestBody DailyTracker dailyTracker) {
+    public ResponseEntity<?> addDailyTracker(
+            @PathVariable String id,
+            @RequestBody DailyTracker dailyTracker) {
 
         try {
-            switch (service.addDailyTracker(id, dailyTracker )){
-                case CREATED: return "Record has been Added Successfully";
-                case CONFLICT: return "Record is already Exists for this date";
-                default: return "User";
+
+            switch (service.addDailyTracker(id, dailyTracker)) {
+
+                case CREATED:
+                    return ResponseEntity
+                            .status(HttpStatus.CREATED)
+                            .body("Record has been added successfully");
+
+                case CONFLICT:
+                    return ResponseEntity
+                            .status(HttpStatus.CONFLICT)
+                            .body("Record cannot be added");
+
+                default:
+                    return ResponseEntity
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("Unknown error occurred");
             }
-        }
-        catch (Exception e){
+
+        } catch (Exception e) {
+
             e.printStackTrace();
-            return e.getMessage();
+
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
         }
     }
 
     @PutMapping("editDailyProgress/{id}")
     @PreAuthorize("#id == authentication.name")
-    public HttpStatus editDailyTracker(@PathVariable
+    public ResponseEntity<?> editDailyTracker(@PathVariable
                                         String id,
                                         @RequestBody DailyTracker dailyTracker) {
+        try {
 
-        return service.editDailyTracker(id,dailyTracker);
+            switch (service.addDailyTracker(id, dailyTracker)) {
+
+                case CREATED:
+                    return ResponseEntity
+                            .status(HttpStatus.CREATED)
+                            .body("Record has been changed successfully");
+
+                case CONFLICT:
+                    return ResponseEntity
+                            .status(HttpStatus.CONFLICT)
+                            .body("Record cannot be Edited or does not exists");
+
+                default:
+                    return ResponseEntity
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("Unknown error occurred");
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
 //        return service.getUsers().toString();
     }
 
@@ -148,10 +199,12 @@ public class UserController {
             }
 
         } catch (Exception e) {
+//            System.out.println("Authentication failed: " + e.getMessage()+ login);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("Invalid username or password");
         }
 
+//        System.out.println("Username and password are incorrect : "+login);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("Invalid username or password");
     }
