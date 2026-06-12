@@ -4,4 +4,4 @@ ADD target/health-tracker-bose-server.jar healthtrackerbose.jar
 
 ENTRYPOINT ["java", "-jar", "/healthtrackerbose.jar"]
 
-LABEL authors="91799"
+LABEL authors="Shashwat Bose"

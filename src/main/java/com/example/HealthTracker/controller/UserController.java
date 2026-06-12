@@ -12,6 +12,7 @@ import com.example.HealthTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,7 +27,7 @@ import java.util.Optional;
         origins = {
                 "*"
 //                "http://localhost:5173",
-//                "http://192.168.31.44:5173"
+//                "http://172.27.80.1:5173"
         }
 )
 public class UserController {
@@ -55,6 +56,7 @@ public class UserController {
     }
 
     @PreAuthorize("#id == authentication.name")
+//    @Secured("#id == authentication.name")
     @GetMapping("/users/{id}")
     public UserTrackerRecords getUsersById(@PathVariable String id) {
         Optional<UserTrackerRecords> users = service.getUsers(id);
