@@ -56,16 +56,14 @@ public class UserService {
         return Optional.empty();
     }
 
-    public HttpStatus saveUser(Users user) throws Exception{
+    public HttpStatus saveUser(Users user, String role) throws Exception{
         boolean usernameAvailable =
                 userRepo.findById(user.getUname()).isEmpty();
 
         boolean emailAvailable =
                 !userRepo.existsByEmail(user.getEmail());
 
-        if(user.getRole()==null){
-            user.setRole("USER");
-        }
+        user.setRole(role);
         if(user.getDailyTrackers() == null){
             user.setDailyTrackers(new ArrayList<>());
         }

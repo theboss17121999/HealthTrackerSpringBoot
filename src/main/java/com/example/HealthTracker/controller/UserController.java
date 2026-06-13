@@ -49,6 +49,7 @@ public class UserController {
         return ResponseEntity.ok(exists);
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/users")
     public List<UserTrackerRecords> getUsers() {
         List<UserTrackerRecords> users = service.getUsers();
@@ -71,7 +72,24 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> addUser(@RequestBody Users user) {
         try {
-            return switch (service.saveUser(user)) {
+            return switch (service.saveUser(user,"ROLE_USER")) {
+                case CREATED -> ResponseEntity.ok("User created successfully");
+                case CONFLICT -> ResponseEntity.badRequest().body("User already exists");
+                default -> ResponseEntity.badRequest().body("User not found")  ;
+            };
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+//        return new String();y
+    }
+
+    @Secured("ROLE_ADMIN")
+    @PostMapping("/AdminRegister")
+    public ResponseEntity<?> addAdmin(@RequestBody Users user) {
+        try {
+            return switch (service.saveUser(user,"ROLE_ADMIN")) {
                 case CREATED -> ResponseEntity.ok("User created successfully");
                 case CONFLICT -> ResponseEntity.badRequest().body("User already exists");
                 default -> ResponseEntity.badRequest().body("User not found")  ;
@@ -85,7 +103,7 @@ public class UserController {
     }
 
     @PostMapping("/addDailyProgress/{id}")
-    @PreAuthorize("#id == authentication.name")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #id == authentication.name")
     public ResponseEntity<?> addDailyTracker(
             @PathVariable String id,
             @RequestBody DailyTracker dailyTracker) {
@@ -121,7 +139,7 @@ public class UserController {
     }
 
     @PutMapping("editDailyProgress/{id}")
-    @PreAuthorize("#id == authentication.name")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #id == authentication.name")
     public ResponseEntity<?> editDailyTracker(@PathVariable
                                         String id,
                                         @RequestBody DailyTracker dailyTracker) {
@@ -157,7 +175,7 @@ public class UserController {
     }
 
     @DeleteMapping("/deleteUser/{id}")
-    @PreAuthorize("#id == authentication.name")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #id == authentication.name")
     public ResponseEntity<String> deleteUser(@PathVariable String id) {
 
         try {
@@ -170,8 +188,8 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #id == authentication.name")
     @GetMapping("DailyTracker/{id}")
-    @PreAuthorize("#id == authentication.name")
     public ResponseEntity<?> getDailyTrackerById(@PathVariable String id) {
         try {
             List<DailyTrackerData> data = service.trackerRecords(id);
