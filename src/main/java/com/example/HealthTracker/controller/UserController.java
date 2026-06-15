@@ -10,6 +10,7 @@ import com.example.HealthTracker.model.Users;
 import com.example.HealthTracker.service.JwtService;
 import com.example.HealthTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -19,15 +20,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(
         origins = {
                 "*"
-//                "http://localhost:5173",
-//                "http://172.27.80.1:5173"
         }
 )
 public class UserController {
@@ -144,12 +146,13 @@ public class UserController {
                                         String id,
                                         @RequestBody DailyTracker dailyTracker) {
         try {
+//            System.out.println(service.editDailyTracker(id, dailyTracker));
 
-            switch (service.addDailyTracker(id, dailyTracker)) {
+            switch (service.editDailyTracker(id, dailyTracker)) {
 
-                case CREATED:
+                case ACCEPTED:
                     return ResponseEntity
-                            .status(HttpStatus.CREATED)
+                            .status(HttpStatus.ACCEPTED)
                             .body("Record has been changed successfully");
 
                 case CONFLICT:
@@ -177,10 +180,28 @@ public class UserController {
     @DeleteMapping("/deleteUser/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or #id == authentication.name")
     public ResponseEntity<String> deleteUser(@PathVariable String id) {
+        System.out.println("Deleting user " + id);
 
         try {
             service.deleteUser(id);
             return ResponseEntity.ok("User deleted successfully");
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/deleteTracker/{id}/{date}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #id == authentication.name")
+    public ResponseEntity<String> deleteTracker(@PathVariable String id,
+                                                @PathVariable
+                                                @DateTimeFormat(pattern = "yyyy-MM-dd")
+                                                Date date) {
+
+        try {
+            service.deleteTrackerbyID(id,date);
+            return ResponseEntity.ok("Tracker deleted successfully");
 
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

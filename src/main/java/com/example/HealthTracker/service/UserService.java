@@ -2,7 +2,6 @@ package com.example.HealthTracker.service;
 
 import com.example.HealthTracker.model.DTO.DailyTrackerData;
 import com.example.HealthTracker.model.DTO.Nutrients;
-import com.example.HealthTracker.model.DTO.UserNameRequest;
 import com.example.HealthTracker.model.DTO.UserTrackerRecords;
 import com.example.HealthTracker.model.DailyTracker;
 import com.example.HealthTracker.model.NutrientsInFlow;
@@ -13,14 +12,10 @@ import com.example.HealthTracker.repo.UserRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -33,12 +28,15 @@ public class UserService {
     @Autowired
     private NutrientsInFlowRepo nutrientsInFlowRepo;
 
+    private int p=1;
+
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
 
     public List<UserTrackerRecords> getUsers() {
 
         List<Users> users = userRepo.findAll();
+        List<Users> users1 = new ArrayList<>();
 
         return users.stream()
                 .map(this::getUserTrackerRecords)
@@ -104,30 +102,32 @@ public class UserService {
     }
 
     public HttpStatus editDailyTracker(String id, DailyTracker reqDailyTracker) {
+//        System.out.println(reqDailyTracker);
         Date date = new Date(reqDailyTracker.getDate().getTime());
 
         Optional<Users> userAvailable = userRepo.findById(id);
 
         Optional<DailyTracker> userDailyTracker = dailyTrackerRepo.findByUnameAndDate(id,date);
-        if(userAvailable.isPresent() && userDailyTracker.isPresent()) {
-            //after finding and storing nutrients for DailyTracker for perticular date
-            NutrientsInFlow nutrients = userDailyTracker.get().getNutrients();
-//            System.out.println(" - - - - -  -Nutritions (find) :"+nutrients);
 
-            //changing Id for reqDailytracker and saving it, so that new record is not created in the table
+//        System.out.println("Tracker :"+userDailyTracker.isPresent());
+//        System.out.println("User :"+userAvailable.isPresent());
+        if(userAvailable.isPresent() && userDailyTracker.isPresent()) {
+//            System.out.println(" here");
+            NutrientsInFlow nutrients = userDailyTracker.get().getNutrients();
             reqDailyTracker.getNutrients().setId(nutrients.getId());
-//            System.out.println(" - - - - -  -Nutritions (to be set) :"+reqDailyTracker.getNutrients());
 
             nutrientsInFlowRepo.save(reqDailyTracker.getNutrients());
+//            System.out.println("Nutrients :"+nutrientsInFlowRepo.findAll());
 
             return HttpStatus.ACCEPTED;
         }
         return HttpStatus.NOT_FOUND;
     }
 
-    public UserTrackerRecords getUserTrackerRecords(Users user) {
+    private UserTrackerRecords getUserTrackerRecords(Users user) {
         return new UserTrackerRecords(
                 user.getUname(),
+//                "wrong",
                 user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
@@ -182,5 +182,28 @@ public class UserService {
         else {
             return true;
         }
+    }
+
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserService.class);
+
+    @Transactional
+    public void deleteTrackerbyID(String id, Date date) {
+
+        List<DailyTracker> tracker1 = dailyTrackerRepo.findByUname(id);
+//        System.out.println(date.toString());
+//        for (DailyTracker dailyTracker : tracker1) {
+//            System.out.println(dailyTracker.getDate());
+//        }
+
+        Optional<DailyTracker> tracker = dailyTrackerRepo.findByUserByDate(id,date);
+//        System.out.println(tracker.get());
+        if (tracker.isEmpty()) {
+            logger.warn("Tracker not found: {}", id);
+            throw new RuntimeException("Tracker not found");
+        }
+
+        // delete the found entity to avoid EmptyResultDataAccessException and
+        // ensure JPA cascades/relationships are handled correctly
+        dailyTrackerRepo.delete(tracker.get());
     }
 }

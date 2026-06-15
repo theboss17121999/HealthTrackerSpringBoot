@@ -38,7 +38,12 @@ public class JwtFilter extends OncePerRequestFilter {
         // 2. Validate that the header exists and follows the 'Bearer <token>' schema
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7); // Extract the actual token strings after "Bearer "
-            userName = jwtService.extractUserName(token);
+            try{
+                userName = jwtService.extractUserName(token);
+            }
+            catch (io.jsonwebtoken.ExpiredJwtException ex){
+                System.err.println(ex.getMessage());
+            }
         }
 
         // 3. If a valid username is found and the user is not already authenticated in this context session
