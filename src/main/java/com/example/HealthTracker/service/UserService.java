@@ -11,6 +11,8 @@ import com.example.HealthTracker.repo.NutrientsInFlowRepo;
 import com.example.HealthTracker.repo.UserRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,12 @@ public class UserService {
     private int p=1;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+
+    public Page<UserTrackerRecords> findAllUsers(Pageable pageable) {
+        return userRepo.findAll(pageable)
+                .map(this::getUserTrackerRecords);
+    }
 
 
     public List<UserTrackerRecords> getUsers() {

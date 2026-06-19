@@ -10,6 +10,10 @@ import com.example.HealthTracker.model.Users;
 import com.example.HealthTracker.service.JwtService;
 import com.example.HealthTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +53,17 @@ public class UserController {
         boolean exists = service.findUser(username);
 
         return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/PageUser")
+    @Secured("ROLE_ADMIN")
+    public ResponseEntity<Page<UserTrackerRecords>> getUsers(@RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "5") int size,
+                                                @RequestParam(defaultValue = "uname") String sortBy,
+                                                @RequestParam(defaultValue = "true") boolean ascending) {
+        Sort sort = ascending ? Sort.by(Sort.Direction.DESC, sortBy) : Sort.by(sortBy);
+        Pageable pageable = PageRequest.of(page,size,sort);
+        return ResponseEntity.ok(service.findAllUsers(pageable));
     }
 
     @Secured("ROLE_ADMIN")
