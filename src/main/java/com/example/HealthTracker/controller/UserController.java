@@ -61,7 +61,6 @@ public class UserController {
                                                 @RequestParam(defaultValue = "5") int size,
                                                 @RequestParam(defaultValue = "uname") String sortBy,
                                                 @RequestParam(defaultValue = "true") boolean ascending) {
-        //hello
         Sort sort = ascending ? Sort.by(Sort.Direction.DESC, sortBy) : Sort.by(sortBy);
         Pageable pageable = PageRequest.of(page,size,sort);
         return ResponseEntity.ok(service.findAllUsers(pageable));
@@ -230,6 +229,27 @@ public class UserController {
     public ResponseEntity<?> getDailyTrackerById(@PathVariable String id) {
         try {
             List<DailyTrackerData> data = service.trackerRecords(id);
+            return ResponseEntity.ok(data);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #id == authentication.name")
+    @GetMapping("DailyTrackerPage/{id}")
+    public ResponseEntity<?> getDailyTrackerByIdPage(@PathVariable String id,
+                                                    @RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "7") int size,
+                                                    @RequestParam(defaultValue = "date") String sortBy,
+                                                    @RequestParam(defaultValue = "true") boolean ascending
+                                                    ) {
+        String sortProp = sortBy.equals("uname") ? "user.uname" : sortBy;
+        Sort sort = ascending ? Sort.by(Sort.Direction.DESC, sortProp) : Sort.by(sortProp);
+        Pageable pageable = PageRequest.of(page,size,sort);
+        try {
+            Page<DailyTrackerData> data = service.trackerRecords(id,pageable);
             return ResponseEntity.ok(data);
 
         } catch (RuntimeException e) {
