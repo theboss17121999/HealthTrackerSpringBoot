@@ -51,10 +51,13 @@ public class UserController {
 
     @GetMapping("/search/{username}")
     public ResponseEntity<Boolean> searchUser(@PathVariable String username) {
-
-        boolean exists = service.findUser(username);
-
-        return ResponseEntity.ok(exists);
+        try{
+            boolean exists = service.findUser(username);
+            return ResponseEntity.ok(exists);
+        }
+        catch (Exception e){
+            return ResponseEntity.ok().body(true);
+        }
     }
 
     @GetMapping("/PageUser")
@@ -64,11 +67,17 @@ public class UserController {
                                                 @RequestParam(defaultValue = "uname") String sortBy,
                                                 @RequestParam(defaultValue = "true") boolean ascending) throws ExecutionException, InterruptedException {
         //uncle
-        System.out.println("Controller thread: " + Thread.currentThread().getName());
+//        System.out.println("Controller thread: " + Thread.currentThread().getName());
         Sort sort = ascending ? Sort.by(Sort.Direction.DESC, sortBy) : Sort.by(sortBy);
         Pageable pageable = PageRequest.of(page,size,sort);
-        return service.findAllUsers(pageable)
-                .thenApply(ResponseEntity::ok);
+        try{
+            return service.findAllUsers(pageable)
+                    .thenApply(ResponseEntity::ok);
+        }
+        catch (Exception e){
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build());
+        }
+
     }
 
     @Secured("ROLE_ADMIN")
@@ -109,7 +118,7 @@ public class UserController {
         }
         catch (Exception e){
             e.printStackTrace();
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
 //        return new String();y
     }

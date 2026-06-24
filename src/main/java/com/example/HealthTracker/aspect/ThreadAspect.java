@@ -1,6 +1,7 @@
 package com.example.HealthTracker.aspect;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,10 @@ public class ThreadAspect {
         );
     }
 
-    @Before("@annotation(org.springframework.scheduling.annotation.Async)")
+    @After("@annotation(org.springframework.scheduling.annotation.Async)")
     public void logPoolStats() {
 
+        System.out.println("------------------------------------");
         System.out.println("Current Thread : " + Thread.currentThread().getName());
         System.out.println("Active Threads: " + delegateExecutor.getActiveCount());
         System.out.println("Pool Size     : " + delegateExecutor.getPoolSize());

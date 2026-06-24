@@ -1,5 +1,6 @@
 package com.example.HealthTracker.service;
 
+import com.example.HealthTracker.CustomException.UseNamerNotAllowed;
 import com.example.HealthTracker.model.DTO.DailyTrackerData;
 import com.example.HealthTracker.model.DTO.Nutrients;
 import com.example.HealthTracker.model.DTO.UserTrackerRecords;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +57,7 @@ public class UserService {
             );
         }
         catch (Exception e){
-            System.out.println("this is the exception");
+            System.out.println("this is the GlobalExceptionHandler");
             e.printStackTrace();
             throw e;
         }
@@ -69,7 +69,7 @@ public class UserService {
     public CompletableFuture<List<UserTrackerRecords>> getUsers() {
 //        Random random = new Random();
 //        if(random.nextInt(2)==1)
-//            throw new RuntimeException("Simulated exception");
+//            throw new RuntimeException("Simulated GlobalExceptionHandler");
 
 //        try {
 //            Thread.sleep(5000); // Simulate long-running work
@@ -100,6 +100,9 @@ public class UserService {
     }
 
     public HttpStatus saveUser(Users user, String role) throws Exception{
+        if(user.getUname().equals("admin")){
+            throw new UseNamerNotAllowed("Username admin not allowed");
+        }
         boolean usernameAvailable =
                 userRepo.findById(user.getUname()).isEmpty();
 
@@ -217,6 +220,9 @@ public class UserService {
     }
 
     public boolean findUser(String username) {
+        if(username.equals("admin")){
+            throw new UseNamerNotAllowed("Username admin not allowed");
+        }
         if(username == null || username.isEmpty() || username.length() < 4 || Character.isDigit(username.charAt(0))){
             return false;
         }
