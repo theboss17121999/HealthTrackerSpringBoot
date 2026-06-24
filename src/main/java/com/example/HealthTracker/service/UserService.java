@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -213,5 +214,23 @@ public class UserService {
         // delete the found entity to avoid EmptyResultDataAccessException and
         // ensure JPA cascades/relationships are handled correctly
         dailyTrackerRepo.delete(tracker.get());
+    }
+
+    public Page<DailyTrackerData> trackerRecords(String id, Pageable pageable) {
+        Optional<Users> user = userRepo.findById(id);
+        if (user.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        Page<DailyTracker> dailyTrackers = dailyTrackerRepo.findByUname(id,pageable);
+        return dailyTrackers
+                .map(tracker -> new DailyTrackerData(
+                        tracker.getDate(),
+                        new Nutrients(
+                                tracker.getNutrients().getFat(),
+                                tracker.getNutrients().getProtein(),
+                                tracker.getNutrients().getCarbohydrate(),
+                                tracker.getNutrients().getFiber()
+                        )
+                ));
     }
 }
