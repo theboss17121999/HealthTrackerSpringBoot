@@ -14,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class UserService {
@@ -36,20 +38,54 @@ public class UserService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
 
-    public Page<UserTrackerRecords> findAllUsers(Pageable pageable) {
-        return userRepo.findAll(pageable)
-                .map(this::getUserTrackerRecords);
+    @Async
+    public CompletableFuture<Page<UserTrackerRecords>> findAllUsers(Pageable pageable) {
+        try{
+//            System.out.println("Async thread: " + Thread.currentThread().getName());
+            Random random = new Random();
+
+//            try {
+//                Thread.sleep(10000); // Simulate long-running work
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//            }
+
+//            System.out.println("Running on thread: " + Thread.currentThread().getName());
+
+            return CompletableFuture.completedFuture(userRepo.findAll(pageable)
+                    .map(this::getUserTrackerRecords)
+            );
+        }
+        catch (Exception e){
+            System.out.println("this is the exception");
+            e.printStackTrace();
+            throw e;
+        }
+
     }
 
 
-    public List<UserTrackerRecords> getUsers() {
+    @Async
+    public CompletableFuture<List<UserTrackerRecords>> getUsers() {
+//        Random random = new Random();
+//        if(random.nextInt(2)==1)
+//            throw new RuntimeException("Simulated exception");
+
+//        try {
+//            Thread.sleep(5000); // Simulate long-running work
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//        }
+
+        System.out.println("Running on thread: " + Thread.currentThread().getName());
 
         List<Users> users = userRepo.findAll();
-        List<Users> users1 = new ArrayList<>();
 
-        return users.stream()
+        List<UserTrackerRecords> result = users.stream()
                 .map(this::getUserTrackerRecords)
                 .toList();
+
+        return CompletableFuture.completedFuture(result);
     }
 
     public Optional<UserTrackerRecords> getUsers(String id) {

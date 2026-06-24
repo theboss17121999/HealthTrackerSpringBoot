@@ -53,7 +53,7 @@ class UserServiceTest {
         Users user = new Users();
         when(userRepo.findAll()).thenReturn(List.of(user));
 
-        List<UserTrackerRecords> userTrackerRecords = userService.getUsers();
+        List<UserTrackerRecords> userTrackerRecords = userService.getUsers().join();
 
         assertEquals(userTrackerRecords.size(), 1);
     }

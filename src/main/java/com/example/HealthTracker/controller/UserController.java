@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin(
@@ -56,22 +58,31 @@ public class UserController {
     }
 
     @GetMapping("/PageUser")
-    @Secured("ROLE_ADMIN")
-    public ResponseEntity<Page<UserTrackerRecords>> getUsers(@RequestParam(defaultValue = "0") int page,
+    @PreAuthorize("hasRole('ADMIN')")
+    public CompletableFuture<ResponseEntity<Page<UserTrackerRecords>>> getUsers(@RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "5") int size,
                                                 @RequestParam(defaultValue = "uname") String sortBy,
-                                                @RequestParam(defaultValue = "true") boolean ascending) {
+                                                @RequestParam(defaultValue = "true") boolean ascending) throws ExecutionException, InterruptedException {
         //uncle
+        System.out.println("Controller thread: " + Thread.currentThread().getName());
         Sort sort = ascending ? Sort.by(Sort.Direction.DESC, sortBy) : Sort.by(sortBy);
         Pageable pageable = PageRequest.of(page,size,sort);
-        return ResponseEntity.ok(service.findAllUsers(pageable));
+        return service.findAllUsers(pageable)
+                .thenApply(ResponseEntity::ok);
     }
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/users")
-    public List<UserTrackerRecords> getUsers() {
-        List<UserTrackerRecords> users = service.getUsers();
-        return users;
+    public ResponseEntity<List<UserTrackerRecords>> getUsers() throws ExecutionException, InterruptedException {
+//        System.out.println("getUsers");
+        CompletableFuture<List<UserTrackerRecords>> users;
+        try {
+            users = service.getUsers();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+//        System.out.println(users);
+        return ResponseEntity.ok(users.get());
     }
 
     @PreAuthorize("#id == authentication.name")
