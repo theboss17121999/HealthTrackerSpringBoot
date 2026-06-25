@@ -85,7 +85,7 @@ class UserServiceTest {
         System.out.println("saveUserSucess");
 
         Users user = new Users();
-        user.setUname("admin");
+        user.setUname("admin1");
         user.setPassword("admin123");
         user.setEmail("admin@example.com");
 
@@ -102,11 +102,11 @@ class UserServiceTest {
         System.out.println("saveUserFailed");
 
         Users user = new Users();
-        user.setUname("admin");
+        user.setUname("admin1");
         user.setPassword("admin123");
         user.setEmail("admin@example.com");
 
-        Mockito.when(userRepo.findById("admin"))
+        Mockito.when(userRepo.findById("admin1"))
                 .thenReturn(Optional.of(user));
 
         HttpStatus s= userService.saveUser(user,"Admin");
@@ -259,22 +259,22 @@ class UserServiceTest {
         user.setPassword("admin123");
 
 
-        when(userRepo.findById("admin")).thenReturn(Optional.of(user));
+        when(userRepo.findById("admin1")).thenReturn(Optional.of(user));
 
-        assertEquals(true, userService.findUser("admin"));
+        assertEquals(true, userService.findUser("admin1"));
 
     }
 
     @Test
     void findUserFail() {
         Users user = new Users();
-        user.setUname("admin");
+        user.setUname("admin1");
         user.setPassword("admin123");
 
 
-        when(userRepo.findById("admin")).thenReturn(Optional.empty());
+        when(userRepo.findById("admin1")).thenReturn(Optional.empty());
 
-        assertEquals(false, userService.findUser("admin"));
+        assertEquals(false, userService.findUser("admin1"));
     }
 
     @AfterAll

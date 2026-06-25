@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface TestAnnotation {
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface AgeAnnotation {
     int minAgeRequired() default 18;
 }

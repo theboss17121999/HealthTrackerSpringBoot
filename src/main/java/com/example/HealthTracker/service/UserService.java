@@ -1,5 +1,7 @@
 package com.example.HealthTracker.service;
 
+import com.example.HealthTracker.CustomAnnotations.AgeAnnotation;
+import com.example.HealthTracker.CustomAnnotations.UserServiceAnnotation;
 import com.example.HealthTracker.CustomException.UseNamerNotAllowed;
 import com.example.HealthTracker.model.DTO.DailyTrackerData;
 import com.example.HealthTracker.model.DTO.Nutrients;
@@ -12,6 +14,10 @@ import com.example.HealthTracker.repo.NutrientsInFlowRepo;
 import com.example.HealthTracker.repo.UserRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,6 +29,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@UserServiceAnnotation
 public class UserService {
     @Autowired
     private UserRepo userRepo;
@@ -39,6 +46,7 @@ public class UserService {
 
 
     @Async
+    @Cacheable(value = "User" , key = "#pageable")
     public CompletableFuture<Page<UserTrackerRecords>> findAllUsers(Pageable pageable) {
         try{
 //            System.out.println("Async thread: " + Thread.currentThread().getName());
@@ -66,6 +74,7 @@ public class UserService {
 
 
     @Async
+    @Cacheable(value = "User")
     public CompletableFuture<List<UserTrackerRecords>> getUsers() {
 //        Random random = new Random();
 //        if(random.nextInt(2)==1)
@@ -88,6 +97,8 @@ public class UserService {
         return CompletableFuture.completedFuture(result);
     }
 
+    @AgeAnnotation
+    @Cacheable(value = "User", key="#id")
     public Optional<UserTrackerRecords> getUsers(String id) {
 
         Optional<Users> user = userRepo.findById(id);
@@ -99,6 +110,8 @@ public class UserService {
         return Optional.empty();
     }
 
+    @AgeAnnotation(minAgeRequired = 21)
+    @CachePut(value = "User", key = "#user.getUname()")
     public HttpStatus saveUser(Users user, String role) throws Exception{
         if(user.getUname().equals("admin")){
             throw new UseNamerNotAllowed("Username admin not allowed");
@@ -126,6 +139,8 @@ public class UserService {
             return HttpStatus.CONFLICT;
         }
     }
+
+    @CachePut(value= "Tracker", key = "#id + '_' + #dailyTracker.getDate()")
     public HttpStatus addDailyTracker(String id, DailyTracker dailyTracker) {
         boolean usernameAvailable =
                 !userRepo.findById(id).isEmpty();
@@ -149,6 +164,7 @@ public class UserService {
         return HttpStatus.CONFLICT;
     }
 
+    @Cacheable(value = "Tracker", key = "#id + '_' + #reqDailyTracker.getDate()")
     public HttpStatus editDailyTracker(String id, DailyTracker reqDailyTracker) {
 //        System.out.println(reqDailyTracker);
         Date date = new Date(reqDailyTracker.getDate().getTime());
@@ -188,6 +204,7 @@ public class UserService {
 
     //this method will delete user and all the date corresponding to it
     @Transactional
+    @CacheEvict(value = "User", key="#id")
     public void deleteUser(String id) {
 
         Users user = userRepo.findById(id)
@@ -200,6 +217,7 @@ public class UserService {
         userRepo.delete(user);
     }
 
+    @Cacheable(value = "user", key = "id")
     public List<DailyTrackerData> trackerRecords(String id) {
         Optional<Users> user = userRepo.findById(id);
         if (user.isEmpty()) {
@@ -219,11 +237,12 @@ public class UserService {
                 .toList();
     }
 
+    @Cacheable(value = "user", key = "#username")
     public boolean findUser(String username) {
         if(username.equals("admin")){
             throw new UseNamerNotAllowed("Username admin not allowed");
         }
-        if(username == null || username.isEmpty() || username.length() < 4 || Character.isDigit(username.charAt(0))){
+        if(username == null || username.isEmpty() || username.length() <= 4 || Character.isDigit(username.charAt(0))){
             return false;
         }
         Optional<Users> user = userRepo.findById(username);
@@ -238,6 +257,7 @@ public class UserService {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserService.class);
 
     @Transactional
+    @CacheEvict(value = "Tracker", key = "#id + '_' + #date" )
     public void deleteTrackerbyID(String id, Date date) {
 
         List<DailyTracker> tracker1 = dailyTrackerRepo.findByUname(id);
@@ -258,6 +278,7 @@ public class UserService {
         dailyTrackerRepo.delete(tracker.get());
     }
 
+    @Cacheable(value = "Tracker" , key = "#id")
     public Page<DailyTrackerData> trackerRecords(String id, Pageable pageable) {
         Optional<Users> user = userRepo.findById(id);
         if (user.isEmpty()) {

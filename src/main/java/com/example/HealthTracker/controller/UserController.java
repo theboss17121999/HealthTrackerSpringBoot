@@ -1,6 +1,7 @@
 package com.example.HealthTracker.controller;
 
 
+import com.example.HealthTracker.CustomAnnotations.UserControllerAnnotation;
 import com.example.HealthTracker.model.DTO.DailyTrackerData;
 import com.example.HealthTracker.model.DTO.LoginRequest;
 import com.example.HealthTracker.model.DTO.UserNameRequest;
@@ -38,6 +39,7 @@ import java.util.concurrent.ExecutionException;
                 "*"
         }
 )
+@UserControllerAnnotation
 public class UserController {
 
     @Autowired

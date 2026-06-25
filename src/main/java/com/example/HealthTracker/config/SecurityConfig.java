@@ -66,10 +66,10 @@ public class SecurityConfig {
                                 "/search/**")
                         .permitAll()
                         .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults()) //for user and password login
+                .httpBasic(Customizer.withDefaults())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)//for user and password login
                 .sessionManagement(session ->
-                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
