@@ -2,12 +2,8 @@ package com.example.HealthTracker.controller;
 
 
 import com.example.HealthTracker.CustomAnnotations.UserControllerAnnotation;
-import com.example.HealthTracker.model.DTO.DailyTrackerData;
-import com.example.HealthTracker.model.DTO.LoginRequest;
-import com.example.HealthTracker.model.DTO.UserNameRequest;
-import com.example.HealthTracker.model.DTO.UserTrackerRecords;
+import com.example.HealthTracker.model.DTO.*;
 import com.example.HealthTracker.model.DailyTracker;
-import com.example.HealthTracker.model.Users;
 import com.example.HealthTracker.service.JwtService;
 import com.example.HealthTracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +21,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -110,7 +104,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> addUser(@RequestBody Users user) {
+    public ResponseEntity<?> addUser(@RequestBody UserFormData user) {
+        System.out.println("UserController addUser"+user);
         try {
             return switch (service.saveUser(user,"ROLE_USER")) {
                 case CREATED -> ResponseEntity.ok("User created successfully");
@@ -122,12 +117,12 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-//        return new String();y
+//        return ResponseEntity.ok().build();
     }
 
     @Secured("ROLE_ADMIN")
     @PostMapping("/AdminRegister")
-    public ResponseEntity<?> addAdmin(@RequestBody Users user) {
+    public ResponseEntity<?> addAdmin(@RequestBody UserFormData user, Authentication authentication) {
         try {
             return switch (service.saveUser(user,"ROLE_ADMIN")) {
                 case CREATED -> ResponseEntity.ok("User created successfully");
@@ -146,7 +141,8 @@ public class UserController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or #id == authentication.name")
     public ResponseEntity<?> addDailyTracker(
             @PathVariable String id,
-            @RequestBody DailyTracker dailyTracker) {
+            @RequestBody DailyTracker dailyTracker,
+            Authentication authentication) {
 
         try {
 
@@ -182,7 +178,8 @@ public class UserController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or #id == authentication.name")
     public ResponseEntity<?> editDailyTracker(@PathVariable
                                         String id,
-                                        @RequestBody DailyTracker dailyTracker) {
+                                        @RequestBody DailyTracker dailyTracker,
+                                        Authentication authentication) {
         try {
 //            System.out.println(service.editDailyTracker(id, dailyTracker));
 
@@ -295,6 +292,7 @@ public class UserController {
                     );
 
             if(authentication.isAuthenticated()) {
+                service.updateLastLoginDate(authentication.getName());
                 return ResponseEntity.ok(jwtService.generateToken(login.uname()));
             }
 

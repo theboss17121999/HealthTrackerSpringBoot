@@ -1,5 +1,6 @@
 package com.example.HealthTracker.service;
 
+import com.example.HealthTracker.model.DTO.UserFormData;
 import com.example.HealthTracker.model.DTO.UserTrackerRecords;
 import com.example.HealthTracker.model.DailyTracker;
 import com.example.HealthTracker.model.Users;
@@ -10,18 +11,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -84,6 +79,19 @@ class UserServiceTest {
     void saveUserSucess() throws Exception {
         System.out.println("saveUserSucess");
 
+        UserFormData userF = new UserFormData(
+                "admin1",
+                "admin123",
+                "admin@example.com",
+                "Admin",
+                "User",
+                null,
+                "Male",
+                175,
+                70,
+                "user"
+        );
+
         Users user = new Users();
         user.setUname("admin1");
         user.setPassword("admin123");
@@ -91,7 +99,7 @@ class UserServiceTest {
 
         Mockito.when(userRepo.save(Mockito.any(Users.class))).thenReturn(user);
 
-        HttpStatus s= userService.saveUser(user,"Admin");
+        HttpStatus s= userService.saveUser(userF,"Admin");
 
         //test
         Assertions.assertEquals(HttpStatus.CREATED,s);
@@ -100,6 +108,18 @@ class UserServiceTest {
     @Test
     void saveUserFail() throws Exception {
         System.out.println("saveUserFailed");
+        UserFormData userF = new UserFormData(
+                "admin1",
+                "admin123",
+                "admin@example.com",
+                "Admin",
+                "User",
+                null,
+                "Male",
+                175,
+                70,
+                "user"
+        );
 
         Users user = new Users();
         user.setUname("admin1");
@@ -109,7 +129,7 @@ class UserServiceTest {
         Mockito.when(userRepo.findById("admin1"))
                 .thenReturn(Optional.of(user));
 
-        HttpStatus s= userService.saveUser(user,"Admin");
+        HttpStatus s= userService.saveUser(userF,"Admin");
 
         //test
         Assertions.assertEquals(HttpStatus.CONFLICT, s);

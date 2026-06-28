@@ -65,6 +65,8 @@ public class SecurityConfig {
                                 "/register",
                                 "/search/**")
                         .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/PageUser")
+                        .hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)//for user and password login
