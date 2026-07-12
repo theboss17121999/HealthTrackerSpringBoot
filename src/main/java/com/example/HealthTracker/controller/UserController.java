@@ -90,7 +90,7 @@ public class UserController {
         return ResponseEntity.ok(users.get());
     }
 
-    @PreAuthorize("#id == authentication.name")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #id == authentication.name")
 //    @Secured("#id == authentication.name")
     @GetMapping("/users/{id}")
     public UserTrackerRecords getUsersById(@PathVariable String id) {

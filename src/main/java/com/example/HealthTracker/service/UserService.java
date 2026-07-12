@@ -15,10 +15,13 @@ import com.example.HealthTracker.repo.NutrientsInFlowRepo;
 import com.example.HealthTracker.repo.UserRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +47,6 @@ public class UserService {
 
 
     @Async
-//    @Cacheable(value = "User" , key = "#pageable")
     public CompletableFuture<Page<UserTrackerRecords>> findAllUsers(Pageable pageable) {
         try{
 //            System.out.println("Async thread: " + Thread.currentThread().getName());
@@ -96,7 +98,7 @@ public class UserService {
     }
 
     @AgeAnnotation
-//    @Cacheable(value = "User", key="#id")
+    @Cacheable(value = "User", key="#id")
     public Optional<UserTrackerRecords> getUsers(String id) {
 
         Optional<Users> user = userRepo.findById(id);
@@ -218,6 +220,7 @@ public class UserService {
     @Transactional
 //    @CacheEvict(value = "User", key="#id")
     public void deleteUser(String id) {
+
 
         Users user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));

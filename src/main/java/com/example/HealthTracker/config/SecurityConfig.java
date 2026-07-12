@@ -65,6 +65,7 @@ public class SecurityConfig {
                                 "/register",
                                 "/search/**")
                         .permitAll()
+                        .requestMatchers("/actuator/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/PageUser")
                         .hasRole("ADMIN")
                         .anyRequest().authenticated())
